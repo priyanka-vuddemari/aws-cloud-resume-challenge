@@ -1,2 +1,2 @@
-# cloud-resume-challenge-aws
-The repo cotains Cloud resume challenge project using AWS
+🚀 My AWS Resume Challenge
+This is my Cloud Resume Challenge built on AWS. It's a static website hosted on S3 Storage, with a visitor counter built on *. The website is built with HTML, CSS, and JavaScript. The visitor counter is built with **
