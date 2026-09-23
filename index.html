@@ -22,6 +22,8 @@
           <span>•</span>
           <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
         </div>
+
+        <div id="views" class="views">👀 Views: <span id="view-count">0</span></div>
       </header>
 
       <section class="summary">
@@ -85,5 +87,16 @@
         </section>
       </main>
     </div>
+    <script>
+      const apiGatewayUrl = "https://uhit0c8za1.execute-api.ap-south-2.amazonaws.com/count";
+      fetch(apiGatewayUrl)
+        .then(response => response.json())
+        .then((responseData) => {
+          document.getElementById("view-count").textContent = responseData.views;
+        })
+        .catch((error) => {
+          console.error("Unable to fetch the visitor count:", error);
+        });
+    </script>
   </body>
 </html>
