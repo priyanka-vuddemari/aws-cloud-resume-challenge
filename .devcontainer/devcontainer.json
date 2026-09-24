@@ -1,4 +1,3 @@
-terraform --version
 {
   "name": "Cloud Resume Challenge",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
@@ -8,9 +7,10 @@ terraform --version
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.12"
     },
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/git-lfs:1": {}
   },
-  "postCreateCommand": "echo 'Dev container ready! AWS CLI, Terraform and Python installed.'",
+  "postCreateCommand": "git lfs install && echo 'Dev container ready! AWS CLI, Terraform, Python, and Git LFS installed.'",
   "customizations": {
     "vscode": {
       "extensions": [
