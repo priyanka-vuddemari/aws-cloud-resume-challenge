@@ -5,10 +5,8 @@ output "s3_website_url" {
 
 output "api_gateway_url" {
   description = "API Gateway invoke URL"
-  value       = trimsuffix(aws_apigatewayv2_stage.default.invoke_url, "/") + "/count"
-
+  value       = "${trimsuffix(aws_apigatewayv2_stage.default.invoke_url, "/")}/count"
 }
-
 
 output "cloudfront_url" {
   description = "CloudFront distribution URL"
