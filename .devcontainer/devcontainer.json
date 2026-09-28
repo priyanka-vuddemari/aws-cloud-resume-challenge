@@ -10,7 +10,7 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/git-lfs:1": {}
   },
-  "postCreateCommand": "git lfs install && echo 'Dev container ready! AWS CLI, Terraform, Python, and Git LFS installed.'",
+  "postCreateCommand": "git lfs install && pip install pytest-playwright && playwright install chromium && echo 'Dev container ready! AWS CLI, Terraform, Python, Playwright and Git LFS installed.'",
   "customizations": {
     "vscode": {
       "extensions": [
