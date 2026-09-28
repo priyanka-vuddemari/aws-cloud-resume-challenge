@@ -56,3 +56,10 @@ jobs:
             echo "Smoke test failed!"
             exit 1
           fi
+              - name: Install Python test dependencies
+        run: |
+          pip install pytest-playwright requests
+          playwright install chromium
+
+      - name: Run Playwright tests
+        run: pytest tests/ -v
