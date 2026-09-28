@@ -46,9 +46,14 @@ jobs:
         working-directory: ./terraform
         run: terraform apply -auto-approve
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Smoke test
         run: |
-          response=$(curl -s https://40g9acq651.execute-api.ap-south-2.amazonaws.com/count)
+          response=$(curl -fsSL https://40g9acq651.execute-api.ap-south-2.amazonaws.com/count)
           echo "API Response: $response"
           if echo "$response" | grep -q "views"; then
             echo "Smoke test passed!"
@@ -56,10 +61,12 @@ jobs:
             echo "Smoke test failed!"
             exit 1
           fi
-              - name: Install Python test dependencies
+
+      - name: Install Python test dependencies
         run: |
-          pip install pytest-playwright requests
-          playwright install chromium
+          python -m pip install --upgrade pip
+          python -m pip install pytest-playwright requests
+          playwright install --with-deps chromium
 
       - name: Run Playwright tests
         run: pytest tests/ -v
