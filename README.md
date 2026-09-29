@@ -1,37 +1,77 @@
-# 🚀 My AWS Resume Challenge
+# AWS Cloud Resume Challenge
 
-This is my Cloud Resume Challenge built on AWS. It's a static website hosted on S3 Storage, with a visitor counter built on Lambda + API Gateway + DynamoDB. The website is built with HTML, CSS, and JavaScript.
+A static resume site hosted on AWS with a serverless visitor counter. The site is served through CloudFront, and each page load calls an API Gateway endpoint backed by Lambda and DynamoDB.
 
-## AWS S3 Static Website Hosting Tutorial
+**Live site:** [https://d14zfhp4g206cx.cloudfront.net/](https://d14zfhp4g206cx.cloudfront.net/)
 
-For the official setup steps, follow the AWS documentation:
+> The HTML currently contains sample resume details. Replace the name, contact information, experience, education, and project content in `index.html` before presenting it as a personal resume.
 
-[Tutorial: Configuring a static website on Amazon S3 - Amazon Simple Storage Service](https://docs.aws.amazon.com/AmazonS3/latest/userguide/HostingWebsiteOnS3Setup.html)
+## Architecture
 
-This tutorial covers how to:
+- **Frontend:** HTML and CSS in `index.html` and `styles.css`, hosted in S3 and delivered through CloudFront.
+- **Visitor counter:** Browser JavaScript calls an API Gateway HTTP API. The endpoint invokes a Python 3.12 Lambda function, which reads and increments the `views` value in DynamoDB.
+- **Infrastructure:** Terraform provisions the S3 website bucket, DynamoDB table, Lambda function, IAM permissions, and API Gateway resources.
+- **Deployment:** GitHub Actions deploys on pushes to `main` and can also be started manually. It syncs the site files to S3, invalidates CloudFront, applies Terraform, and runs API smoke tests.
 
-- enable static website hosting on an S3 bucket
-- configure the index and error documents
-- set up bucket policies and public access
-- test the website endpoint in a browser
+## Repository Layout
 
-## Understanding DNS
+```text
+.
+|-- index.html
+|-- styles.css
+|-- lambda/
+|   `-- lambda_function.py
+|-- terraform/
+|   |-- main.tf
+|   |-- outputs.tf
+|   |-- providers.tf
+|   `-- variables.tf
+|-- tests/
+|   `-- test_resume.py
+`-- .github/workflows/deploy.yml
+```
 
-To understand how a custom domain points to the website, review this DNS overview:
+## Deployment Configuration
 
-[What is DNS? | Learning Center](https://www.cloudflare.com/learning/dns/what-is-dns/)
+The deployment workflow currently expects these GitHub Actions repository secrets. Add them under **Settings > Secrets and variables > Actions > Secrets**:
 
-This article explains:
+| Name | Purpose |
+| --- | --- |
+| `AWS_ACCESS_KEY_ID` | AWS access key used by the workflow |
+| `AWS_SECRET_ACCESS_KEY` | Matching AWS secret access key |
+| `AWS_REGION` | AWS region (`ap-south-2`); the workflow currently reads this from Secrets |
+| `CLOUDFRONT_DISTRIBUTION_ID` | Distribution to invalidate after publishing |
 
-- what DNS is and why it is needed
-- how domain names are translated into IP addresses
-- the role of DNS records such as A, CNAME, and NS
-- how DNS helps route traffic to websites and services
+Use an IAM identity with only the permissions needed by the deployment. For a long-lived public project, prefer GitHub Actions OIDC with an AWS IAM role over stored access keys, and rotate/revoke any credentials that may have been exposed.
 
-## Project Playlist Guide
+**Do not treat public URLs as secrets.** The resume URL and API Gateway URL are visible to every site visitor, and any value embedded in `index.html` is public after deployment. Keep public endpoints and resource identifiers in source or GitHub Actions **Variables**; reserve **Secrets** for credentials, tokens, and other values whose disclosure grants access. The current workflow has the S3 bucket name and API smoke-test URL in its source, while the page itself contains the API URL.
 
-This YouTube playlist was a helpful walkthrough for the AWS edition of the Cloud Resume Challenge:
+Terraform uses an S3 backend configured in `terraform/providers.tf`. The state bucket (`priyanka-terraform-state-bk` in `ap-south-2`) must exist before running `terraform init`. Keep Terraform state and `terraform.tfvars` files out of version control; state can contain sensitive infrastructure data. The Terraform `.gitignore` excludes these files.
 
-[Cloud Resume Challenge (AWS edition)](https://www.youtube.com/watch?v=zAhXukIDWkM&list=PLRBkbp6t5gM1GLxpZ382Egi7IKGIq6jVF)
+## Run Locally
 
-It is a useful companion resource for understanding how to build and connect the different AWS services used in this project.
+Requirements: Terraform 1.x, AWS CLI credentials with permissions to manage the resources, and Python 3.12 for the Lambda runtime.
+
+Initialize and review the infrastructure from the Terraform directory:
+
+```sh
+cd terraform
+terraform init
+terraform plan
+terraform apply
+```
+
+Run the API smoke tests from the repository root:
+
+```sh
+python -m pip install pytest requests playwright
+python -m pytest tests/ -v
+```
+
+These tests call the deployed API, and requests increment the live visitor counter. They require network access and a reachable API endpoint.
+
+## References
+
+- [Cloud Resume Challenge (AWS edition)](https://www.youtube.com/watch?v=zAhXukIDWkM&list=PLRBkbp6t5gM1GLxpZ382Egi7IKGIq6jVF)
+- [Host a static website on Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/HostingWebsiteOnS3Setup.html)
+- [Cloudflare: What is DNS?](https://www.cloudflare.com/learning/dns/what-is-dns/)
