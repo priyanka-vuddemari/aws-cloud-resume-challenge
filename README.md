@@ -70,6 +70,11 @@ python -m pytest tests/ -v
 
 These tests call the deployed API, and requests increment the live visitor counter. They require network access and a reachable API endpoint.
 
+Architecture Diagram 
+
+<img width="1200" height="1059" alt="CRC" src="https://github.com/user-attachments/assets/893a49e4-6740-4567-bb1a-59f211f7762f" />
+
+
 ## References
 
 - [Cloud Resume Challenge (AWS edition)](https://www.youtube.com/watch?v=zAhXukIDWkM&list=PLRBkbp6t5gM1GLxpZ382Egi7IKGIq6jVF)
